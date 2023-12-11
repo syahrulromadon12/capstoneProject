@@ -8,16 +8,23 @@ import com.example.terrestrial.data.auth.dataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
+
 object Injection {
-    fun provideUserRepository(context: Context): UserRepository {
+    fun provideRepository(context: Context): UserRepository {
         val pref = UserPreferences.getInstance(context.dataStore)
-        val apiService = ApiConfig.apiInstance
-        return UserRepository.getInstance(apiService,pref)
+        val user = runBlocking { pref.getLoginSession().first() }
+        val apiService = ApiConfig.getApiService( user.token)
+        return UserRepository.getInstance(apiService, pref)
     }
-
-//    fun provideStoryRepository(): StoryRepository {
-//        val apiService = ApiConfig.apiInstance
-//        return StoryRepository.getInstance(apiService)
-//    }
-
 }
+
+//    fun provideUserRepository(context: Context): UserRepository {
+//        val pref = UserPreferences.getInstance(context.dataStore)
+//        val apiService = ApiConfig.apiInstance
+//        return UserRepository.getInstance(apiService,pref)
+//    }
+//
+////    fun provideStoryRepository(): StoryRepository {
+////        val apiService = ApiConfig.apiInstance
+////        return StoryRepository.getInstance(apiService)
+////    }

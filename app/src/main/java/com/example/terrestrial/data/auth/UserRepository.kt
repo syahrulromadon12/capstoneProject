@@ -13,23 +13,20 @@ class UserRepository private constructor(
     private val userPreferences: UserPreferences
 ) {
 
-    suspend fun signup(name: String, email: String, password: String): Result<SignupResponse?> {
+    suspend fun signup(request: ApiService.SignupRequest): Result<SignupResponse?> {
         return try {
-            val response = apiService.signup(name, email, password)
+            val response = apiService.signup(request)
             Result.Success(response)
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
     }
 
-    suspend fun login(email: String, password: String): Result<LoginResponse?> {
-        return try {
-            val response = apiService.login(email, password)
-            Result.Success(response)
-        } catch (e: Exception) {
-            Result.Error(e.message.toString())
-        }
+    suspend fun login(request: ApiService.LoginRequest): LoginResponse {
+        return apiService.login(request)
     }
+
+
 
     suspend fun saveLoginSession(user: UserModel) {
         userPreferences.saveLoginSession(user)

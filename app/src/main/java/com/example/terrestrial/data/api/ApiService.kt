@@ -1,9 +1,11 @@
 package com.example.terrestrial.data.api
 
+import com.example.terrestrial.data.auth.UserRepository
 import com.example.terrestrial.data.response.AllCourseResponse
 import com.example.terrestrial.data.response.DetailCourseResponse
 import com.example.terrestrial.data.response.LoginResponse
 import com.example.terrestrial.data.response.SignupResponse
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -12,20 +14,25 @@ import retrofit2.http.Path
 
 interface ApiService {
 
-    @FormUrlEncoded
+    data class SignupRequest(
+        val name: String,
+        val email: String,
+        val password: String
+    )
+
     @POST("users/signup")
     suspend fun signup(
-        @Field("name") name: String,
-        @Field("email") email: String,
-        @Field("password") password: String
+        @Body request: SignupRequest
     ): SignupResponse
 
-    @FormUrlEncoded
+    data class LoginRequest(
+        val email: String,
+        val password: String
+    )
+
     @POST("users/login")
-    suspend fun login(
-        @Field("email") email: String,
-        @Field("password") password: String
-    ): LoginResponse
+    suspend fun login(@Body request: LoginRequest): LoginResponse
+
 
     @FormUrlEncoded
     @GET("course")

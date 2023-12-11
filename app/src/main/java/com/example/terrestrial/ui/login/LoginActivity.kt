@@ -11,9 +11,13 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import com.example.terrestrial.data.auth.Result
 import com.example.terrestrial.R
 import com.example.terrestrial.data.auth.UserModel
+import com.example.terrestrial.data.response.LoginResponse
 import com.example.terrestrial.databinding.ActivityLoginBinding
 import com.example.terrestrial.ui.ViewModelFactory
 import com.example.terrestrial.ui.main.MainActivity
@@ -21,67 +25,27 @@ import com.example.terrestrial.ui.main.MainViewModel
 import com.example.terrestrial.ui.signup.SignupActivity
 
 class LoginActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLoginBinding
 
-    private val viewModel by viewModels<MainViewModel> {
+    private val viewModel by viewModels<LoginViewModel> {
         ViewModelFactory.getInstance(this)
     }
+    private lateinit var binding : ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.loginButton.setOnClickListener { processLogin() }
+        showLoading(false)
 
         binding.tvSignup.setOnClickListener {
-            startActivity(Intent(this, SignupActivity::class.java))
+            val signup = Intent(this, SignupActivity::class.java)
+            startActivity(signup)
         }
+
         setupView()
+        setupAction()
         playAnimation()
-    }
-
-    private fun processLogin() {
-        binding.apply {
-            val email = emailEditText.text.toString()
-            val password = passwordEditText.text.toString()
-
-            viewModel.login(email, password).observe(this@LoginActivity) { result ->
-                when (result) {
-                    is Result.Loading -> {
-                        showLoading(true)
-                        loginButton.isEnabled = false
-                    }
-                    is Result.Success -> {
-                        showLoading(false)
-                        loginButton.isEnabled = true
-                        val token = result.data?.loginResult?.token.orEmpty()
-                        val name = result.data?.loginResult?.name.orEmpty()
-                        val resultEmail = result.data?.loginResult?.email.orEmpty()
-                        val user = UserModel(name, resultEmail, token, isLogin = true)
-                        viewModel.setLogin(user)
-                        showToast(getString(R.string.login_succes))
-                        moveToMainActivity()
-                    }
-                    is Result.Error -> {
-                        showLoading(false)
-                        loginButton.isEnabled = true
-                        showToast(getString(R.string.login_failed))
-                    }
-                }
-            }
-        }
-    }
-
-    private fun moveToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-        finish()
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun setupView() {
@@ -97,8 +61,36 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
+    private fun setupAction() {
+        binding.loginButton.setOnClickListener {
+            val email = binding.emailEditText.text.toString()
+            val password = binding.passwordEditText.text.toString()
+
+            showLoading(true)
+
+            viewModel.loginUser(email, password)
+
+            viewModel.loginResult.observe(this) { isLogin ->
+                showLoading(false)
+
+                if (isLogin) {
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                } else {
+                    showToast(getString(R.string.login_failed))
+                }
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
     private fun showLoading(isLoading: Boolean) {
         binding.loading.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.imageView.visibility = if (isLoading) View.GONE else View.VISIBLE
     }
 
     private fun playAnimation() {
@@ -138,4 +130,5 @@ class LoginActivity : AppCompatActivity() {
             startDelay = 90
         }.start()
     }
+
 }

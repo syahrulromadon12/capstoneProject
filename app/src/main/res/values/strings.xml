@@ -44,4 +44,6 @@
     <string name="pic_kursus">picture kursus</string>
     <string name="login_succes">Login Succes</string>
     <string name="login_failed">Gagal Login, Coba lagi</string>
+    <string name="not_empty_form">form tidak boleh kosong</string>
+    <string name="valid_email">email tidak valid</string>
 </resources>
