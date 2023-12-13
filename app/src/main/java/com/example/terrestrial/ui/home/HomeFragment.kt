@@ -1,19 +1,17 @@
 package com.example.terrestrial.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.terrestrial.data.api.ApiConfig
-import com.example.terrestrial.data.auth.UserRepository
 import com.example.terrestrial.databinding.FragmentHomeBinding
 import com.example.terrestrial.ui.ViewModelFactory
+import com.example.terrestrial.ui.detail.DetailCourseActivity
 
 class HomeFragment : Fragment() {
 
@@ -32,19 +30,49 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val recyclerView: RecyclerView = binding.rvRecommend
-        val adapter = CourseAdapter()
-
-        homeViewModel.courseList.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
+        homeViewModel.getSession().observe(viewLifecycleOwner) { user ->
+            binding.tvName.text = user.name
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        recyclerView.adapter = adapter
+        // Setup RecyclerView for Course
+        val courseRecyclerView: RecyclerView = binding.rvCourse
+        val courseAdapter = CourseAdapter { courseId ->
+            navigateToDetail(courseId)
+        }
 
+        homeViewModel.courseList.observe(viewLifecycleOwner) {
+            courseAdapter.submitList(it)
+        }
+
+        courseRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        courseRecyclerView.adapter = courseAdapter
+
+        // Setup RecyclerView for Recommend Course
+        val recommendRecyclerView: RecyclerView = binding.rvRecommend
+        val recommendAdapter = CourseAdapter { courseId ->
+            navigateToDetail(courseId)
+        }
+
+        homeViewModel.recommendCourseList.observe(viewLifecycleOwner) {
+            recommendAdapter.submitList(it)
+        }
+
+        recommendRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        recommendRecyclerView.adapter = recommendAdapter
+
+        // Fetch data for both Course and Recommend Course
         homeViewModel.getAllCourse()
+        homeViewModel.getRecommendCourse()
 
         return root
+    }
+
+    private fun navigateToDetail(courseId: String) {
+        val intent = Intent(requireContext(), DetailCourseActivity::class.java)
+        intent.putExtra(DetailCourseActivity.EXTRA_KURSUS_ID, courseId)
+        startActivity(intent)
     }
 
     override fun onDestroyView() {

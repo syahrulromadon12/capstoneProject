@@ -22,7 +22,7 @@
             android:name=".ui.kursuskelas.kursus_kelas_Activity"
             android:exported="false" />
         <activity
-            android:name=".ui.detail.DetailKursusActivity"
+            android:name=".ui.detail.DetailCourseActivity"
             android:exported="false" />
         <activity
             android:name=".ui.upload.UploadFragment"

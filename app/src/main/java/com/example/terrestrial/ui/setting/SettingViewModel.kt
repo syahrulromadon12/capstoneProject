@@ -3,9 +3,10 @@ package com.example.terrestrial.ui.setting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.terrestrial.R
-import com.example.terrestrial.data.auth.UserPreferences
+import com.example.terrestrial.data.auth.UserModel
 import com.example.terrestrial.data.auth.UserRepository
 import kotlinx.coroutines.launch
 
@@ -41,4 +42,6 @@ class SettingViewModel(private val repository: UserRepository) : ViewModel() {
             repository.clearLoginSession()
         }
     }
+
+    fun getSession(): LiveData<UserModel> = repository.getLoginSession().asLiveData()
 }

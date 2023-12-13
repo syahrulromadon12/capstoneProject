@@ -1,7 +1,5 @@
 package com.example.terrestrial.data.api
 
-import com.example.terrestrial.utils.Constant.BASE_URL
-import de.hdodenhof.circleimageview.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,7 +13,7 @@ object ApiConfig {
         val authInterceptor = Interceptor { chain ->
             val req = chain.request()
             val requestHeaders = req.newBuilder()
-                .addHeader("Authorization", "Bearer $token")
+                .addHeader("Authorization", token)
                 .build()
             chain.proceed(requestHeaders)
         }
@@ -24,7 +22,7 @@ object ApiConfig {
             .addInterceptor(authInterceptor)
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://a585ef88faa8a7.lhr.life/api/")
+            .baseUrl("https://bdef73aa4a82f4.lhr.life/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

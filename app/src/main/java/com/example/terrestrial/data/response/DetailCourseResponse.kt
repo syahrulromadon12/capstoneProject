@@ -19,6 +19,9 @@ data class Data(
 	@field:SerializedName("thumbnail")
 	val thumbnail: String? = null,
 
+	@field:SerializedName("courseName")
+	val courseName: String? = null,
+
 	@field:SerializedName("learning")
 	val learning: String? = null,
 

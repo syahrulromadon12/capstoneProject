@@ -3,6 +3,7 @@ package com.example.terrestrial.ui.setting
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,20 +30,22 @@ class SettingFragment : Fragment() {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        viewModel.name.observe(viewLifecycleOwner) {
-            binding.name.text = it
-        }
-
-        viewModel.email.observe(viewLifecycleOwner) {
-            binding.email.text = it
+        viewModel.getSession().observe(viewLifecycleOwner) { user ->
+            binding.name.text = user.name
+            binding.email.text = user.email
         }
 
         viewModel.profile.observe(viewLifecycleOwner) { imageUrl ->
+            Log.d("ProfileImage", "Image URL: $imageUrl")
             Glide.with(this)
                 .load(imageUrl)
-                .placeholder(R.drawable.elon_musk)
+                .placeholder(R.drawable.default_profile)
                 .circleCrop()
                 .into(binding.photo)
+        }
+
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed()
         }
 
         binding.language.setOnClickListener {

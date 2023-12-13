@@ -1,32 +1,26 @@
 package com.example.terrestrial.data.auth
 
+import com.example.terrestrial.data.api.ApiConfig
 import com.example.terrestrial.data.api.ApiService
 import com.example.terrestrial.data.response.AllCourseResponse
+import com.example.terrestrial.data.response.DetailCourseResponse
 import com.example.terrestrial.data.response.LoginResponse
 import com.example.terrestrial.data.response.SignupResponse
 import kotlinx.coroutines.flow.Flow
-import retrofit2.HttpException
-import retrofit2.Response
+import kotlinx.coroutines.flow.first
 
 class UserRepository private constructor(
     private val apiService: ApiService,
     private val userPreferences: UserPreferences
 ) {
 
-    suspend fun signup(request: ApiService.SignupRequest): Result<SignupResponse?> {
-        return try {
-            val response = apiService.signup(request)
-            Result.Success(response)
-        } catch (e: Exception) {
-            Result.Error(e.message.toString())
-        }
+    suspend fun signup(request: ApiService.SignupRequest): SignupResponse {
+        return apiService.signup(request)
     }
 
     suspend fun login(request: ApiService.LoginRequest): LoginResponse {
         return apiService.login(request)
     }
-
-
 
     suspend fun saveLoginSession(user: UserModel) {
         userPreferences.saveLoginSession(user)
@@ -38,9 +32,32 @@ class UserRepository private constructor(
         userPreferences.clearLoginSession()
     }
 
-    suspend fun getAllCourse(): Result<List<AllCourseResponse>?> {
+    suspend fun getAllCourse(): Result<AllCourseResponse?> {
         return try {
+            val user = userPreferences.getLoginSession().first()
+            val apiService = ApiConfig.getApiService(user.token)
             val response = apiService.getAllCourse()
+            Result.Success(response)
+        } catch (e: Exception) {
+            Result.Error(e.message.toString())
+        }
+    }
+
+
+    suspend fun getRecommendCourse(): Result<AllCourseResponse?> {
+        return try {
+            val user = userPreferences.getLoginSession().first()
+            val apiService = ApiConfig.getApiService(user.token)
+            val response = apiService.getRecommendCourse()
+            Result.Success(response)
+        } catch (e: Exception) {
+            Result.Error(e.message.toString())
+        }
+    }
+
+    suspend fun getDetailCourse(id: String): Result<DetailCourseResponse?> {
+        return try {
+            val response = apiService.getDetailCourse(id)
             Result.Success(response)
         } catch (e: Exception) {
             Result.Error(e.message.toString())

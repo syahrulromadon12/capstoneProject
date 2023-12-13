@@ -46,4 +46,6 @@
     <string name="login_failed">Gagal Login, Coba lagi</string>
     <string name="not_empty_form">form tidak boleh kosong</string>
     <string name="valid_email">email tidak valid</string>
+    <string name="image_description">Image</string>
+    <string name="coming_soon">Mohon maaf ges,,\nfiturnya belum jadi masih aku koding.\nhuftt....</string>
 </resources>
