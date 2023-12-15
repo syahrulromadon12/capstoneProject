@@ -7,12 +7,11 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:padding="16dp"
-    app:cardCornerRadius="20dp"
-    app:cardElevation="5dp">
+    app:cardCornerRadius="20dp">
 
     <RelativeLayout
         android:layout_width="402dp"
-        android:layout_height="136dp"
+        android:layout_height="146dp"
         android:padding="16dp">
 
         <androidx.cardview.widget.CardView
@@ -26,7 +25,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 tools:ignore="ContentDescription"
-                tools:srcCompat="@color/orange"/>
+                tools:srcCompat="@color/orange" />
 
         </androidx.cardview.widget.CardView>
 
@@ -68,7 +67,7 @@
             android:layout_marginEnd="30dp"
             android:text="@string/Belajar"
             android:textColor="@color/orange"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
 
     </RelativeLayout>

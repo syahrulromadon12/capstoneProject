@@ -17,4 +17,3 @@ class DetailCourseViewModel(private val repository: UserRepository) : ViewModel(
     }
 }
 
-

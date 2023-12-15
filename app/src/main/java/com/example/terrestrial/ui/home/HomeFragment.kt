@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,6 +62,27 @@ class HomeFragment : Fragment() {
         recommendRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recommendRecyclerView.adapter = recommendAdapter
+
+        with(binding){
+            searchView.setupWithSearchBar(searchBar)
+            searchView
+                .editText
+                .setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        val query = searchView.text.toString().trim()
+                        if (query.isNotEmpty()) {
+                            homeViewModel.searchCourse(query)
+                        }
+                        searchView.hide()
+                        return@setOnEditorActionListener true
+                    }
+                    false
+                }
+        }
+
+        homeViewModel.searchedCourseList.observe(viewLifecycleOwner) { searchedCourseList ->
+
+        }
 
         // Fetch data for both Course and Recommend Course
         homeViewModel.getAllCourse()

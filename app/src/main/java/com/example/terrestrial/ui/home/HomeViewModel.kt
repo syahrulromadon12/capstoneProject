@@ -16,8 +16,12 @@ class HomeViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _courseList = MutableLiveData<List<DataItem>?>()
     val courseList: MutableLiveData<List<DataItem>?> get() = _courseList
 
-    private val _recommendCourseList = MutableLiveData<List<DataItem>?>()
-    val recommendCourseList: MutableLiveData<List<DataItem>?> get() = _recommendCourseList
+    private val _recommendCourseList = MutableLiveData<List<DataItem?>>()
+    val recommendCourseList: MutableLiveData<List<DataItem?>> get() = _recommendCourseList
+
+    private val _searchedCourseList = MutableLiveData<List<DataItem?>?>()
+    val searchedCourseList: LiveData<List<DataItem?>?> get() = _searchedCourseList
+
 
     fun getSession(): LiveData<UserModel> = userRepository.getLoginSession().asLiveData()
 
@@ -37,6 +41,21 @@ class HomeViewModel(private val userRepository: UserRepository) : ViewModel() {
                 is Result.Success -> _recommendCourseList.value = result.data?.data as List<DataItem>?
                 is Result.Error -> {/* handle error */}
                 else -> {}
+            }
+        }
+    }
+
+    fun searchCourse(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = userRepository.searchCourse(query)
+                if (!response.error!!) {
+                    _searchedCourseList.postValue(response.data)
+                } else {
+                    // Handle error jika diperlukan
+                }
+            } catch (e: Exception) {
+                // Handle exception jika diperlukan
             }
         }
     }

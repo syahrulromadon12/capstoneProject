@@ -8,6 +8,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface ApiService {
 
@@ -38,9 +39,13 @@ interface ApiService {
     @GET("recommendCourse")
     suspend fun getRecommendCourse(): AllCourseResponse
 
-
     @GET("course/{id}")
     suspend fun getDetailCourse(
         @Path("id") id: String
     ): DetailCourseResponse
+
+    @GET("search/course")
+    fun searchUser(
+        @QueryMap params: Map<String, String>
+    ): AllCourseResponse
 }

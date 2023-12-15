@@ -6,8 +6,11 @@ import com.example.terrestrial.data.response.AllCourseResponse
 import com.example.terrestrial.data.response.DetailCourseResponse
 import com.example.terrestrial.data.response.LoginResponse
 import com.example.terrestrial.data.response.SignupResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class UserRepository private constructor(
     private val apiService: ApiService,
@@ -57,12 +60,21 @@ class UserRepository private constructor(
 
     suspend fun getDetailCourse(id: String): Result<DetailCourseResponse?> {
         return try {
+            val user = userPreferences.getLoginSession().first()
+            val apiService = ApiConfig.getApiService(user.token)
             val response = apiService.getDetailCourse(id)
             Result.Success(response)
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
     }
+
+    suspend fun searchCourse(query: String): AllCourseResponse {
+        val user = userPreferences.getLoginSession().first()
+        val apiService = ApiConfig.getApiService(user.token)
+        return apiService.searchUser(mapOf("query" to query))
+    }
+
 
     companion object {
         @Volatile
