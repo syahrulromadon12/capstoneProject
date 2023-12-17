@@ -1,4 +1,4 @@
-package com.example.terrestrial.ui.rekomendasikelas
+package com.example.terrestrial.ui.recommendation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

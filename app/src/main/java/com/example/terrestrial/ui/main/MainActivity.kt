@@ -12,6 +12,7 @@ import com.example.terrestrial.R
 import com.example.terrestrial.databinding.ActivityMainBinding
 import com.example.terrestrial.ui.ViewModelFactory
 import com.example.terrestrial.ui.login.LoginActivity
+import com.example.terrestrial.ui.recommendation.QuestionActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,16 +29,21 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.getSession().observe(this) { user ->
             if (user.isLogin) {
-                val navView: BottomNavigationView = binding.navView
+                if(user.isAnswer){
+                    val navView: BottomNavigationView = binding.navView
 
-                val navController = findNavController(R.id.nav_host_fragment_activity_main)
-                AppBarConfiguration(
-                    setOf(
-                        R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                    val navController = findNavController(R.id.nav_host_fragment_activity_main)
+                    AppBarConfiguration(
+                        setOf(
+                            R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                        )
                     )
-                )
 
-                navView.setupWithNavController(navController)
+                    navView.setupWithNavController(navController)
+                } else{
+                    startActivity(Intent(this, QuestionActivity::class.java))
+                    finish()
+                }
             } else {
                 startActivity(Intent(this, LoginActivity::class.java))
                 finish()

@@ -3,7 +3,9 @@ package com.example.terrestrial.data.api
 import com.example.terrestrial.data.response.AllCourseResponse
 import com.example.terrestrial.data.response.DetailCourseResponse
 import com.example.terrestrial.data.response.LoginResponse
+import com.example.terrestrial.data.response.QuestionResponse
 import com.example.terrestrial.data.response.SignupResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -48,4 +50,10 @@ interface ApiService {
     fun searchUser(
         @QueryMap params: Map<String, String>
     ): AllCourseResponse
+
+    @GET("question")
+    suspend fun getQuestion() : QuestionResponse
+
+    @POST("answers")
+    suspend fun submitAnswers(@Body answers: MutableList<String>): Response<Void>
 }

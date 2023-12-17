@@ -9,6 +9,7 @@ import com.example.terrestrial.ui.home.HomeViewModel
 import com.example.terrestrial.ui.login.LoginViewModel
 import com.example.terrestrial.utils.Injection
 import com.example.terrestrial.ui.main.MainViewModel
+import com.example.terrestrial.ui.recommendation.QuestionViewModel
 import com.example.terrestrial.ui.setting.SettingViewModel
 import com.example.terrestrial.ui.signup.SignupViewModel
 
@@ -34,6 +35,9 @@ class ViewModelFactory(private val repository: UserRepository) : ViewModelProvid
             }
             modelClass.isAssignableFrom(DetailCourseViewModel::class.java) -> {
                 DetailCourseViewModel(repository) as T
+            }
+            modelClass.isAssignableFrom(QuestionViewModel::class.java) -> {
+                QuestionViewModel(repository) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }

@@ -48,4 +48,6 @@
     <string name="valid_email">email tidak valid</string>
     <string name="image_description">Image</string>
     <string name="coming_soon">Mohon maaf ges,,\nfiturnya belum jadi masih aku koding.\nhuftt....</string>
+    <string name="question">Recommendation question</string>
+    <string name="submit">Submit</string>
 </resources>
