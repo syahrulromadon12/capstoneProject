@@ -50,4 +50,15 @@
     <string name="coming_soon">Mohon maaf ges,,\nfiturnya belum jadi masih aku koding.\nhuftt....</string>
     <string name="question">Recommendation question</string>
     <string name="submit">Submit</string>
+    <string name="title_question">Question Career recommendations</string>
+    <string name="hore">Hooray!! You are %s</string>
+    <string name="recommend_result">We have class recommendations for you</string>
+    <string name="Next">Next</string>
+    <string name="coming">Coming Soon</string>
+    <string name="title_login">Login</string>
+    <string name="dialog_title_success">Yeah!</string>
+    <string name="dialog_message_success">Your account is created. \nhappy to learn:)</string>
+    <string name="dialog_button_next">Next</string>
+    <string name="null_data">Kursus tidak ditemukan</string>
+    <string name="error">Error saat Pengambilan data</string>
 </resources>

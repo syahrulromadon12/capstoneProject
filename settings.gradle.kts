@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Terrestrial"
 include(":app")
- 
+include(":core")

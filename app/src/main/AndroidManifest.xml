@@ -15,11 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Terrestrial"
         tools:targetApi="tiramisu" >
+        <activity android:name=".ui.recommendation.QuestionActivity"
+            android:exported="false"/>
         <activity
-            android:name=".ui.recommendation.QuestionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.recommendation.RekomendasiKelasActivity"
+            android:name=".ui.recommendation.RecommendationResultActivity"
             android:exported="false" />
         <activity
             android:name=".ui.kursuskelas.kursus_kelas_Activity"
@@ -28,7 +27,7 @@
             android:name=".ui.detail.DetailCourseActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.upload.UploadFragment"
+            android:name=".ui.upload.FavoriteFragment"
             android:exported="false" />
         <activity
             android:name=".ui.home.HomeFragment"

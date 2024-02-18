@@ -25,41 +25,36 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginBottom="8dp"/>
 
-        <Button
-            android:id="@+id/btnOption1"
+        <RadioGroup
+            android:id="@+id/radioGroupOptions"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Pilihan 1"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvQuestion"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <Button
-            android:id="@+id/btnOption2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Pilihan 2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnOption1"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_marginBottom="8dp">
 
-        <Button
-            android:id="@+id/btnOption3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Pilihan 3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnOption2"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <RadioButton
+                android:id="@+id/radioOption1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilihan 1"/>
+
+            <RadioButton
+                android:id="@+id/radioOption2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilihan 2"/>
+
+            <RadioButton
+                android:id="@+id/radioOption3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pilihan 3"/>
+
+        </RadioGroup>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
