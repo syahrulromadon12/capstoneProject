@@ -7,20 +7,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.app.terrestrial.core.domain.model.UserModel
 import com.bumptech.glide.Glide
 import com.app.terrestrial.R
 import com.app.terrestrial.databinding.FragmentSettingBinding
-import com.app.terrestrial.ui.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SettingFragment : Fragment() {
 
     private var _binding: FragmentSettingBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: SettingViewModel by viewModels { ViewModelFactory.getInstance(requireContext()) }
+    private val viewModel: SettingViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,9 +32,11 @@ class SettingFragment : Fragment() {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        viewModel.getSession().observe(viewLifecycleOwner) { user ->
-            binding.name.text = user.name
-            binding.email.text = user.email
+        lifecycleScope.launch {
+            viewModel.getSession().observe(viewLifecycleOwner) { user: UserModel ->
+                binding.name.text = user.name
+                binding.email.text = user.email
+            }
         }
 
         viewModel.profile.observe(viewLifecycleOwner) { imageUrl ->
@@ -45,20 +49,11 @@ class SettingFragment : Fragment() {
         }
 
         binding.back.setOnClickListener {
-            requireActivity().onBackPressed()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
         binding.language.setOnClickListener {
             startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
-        }
-
-        binding.theme.setOnCheckedChangeListener { _, isChecked ->
-            val nightMode = if (isChecked) {
-                AppCompatDelegate.MODE_NIGHT_YES
-            } else {
-                AppCompatDelegate.MODE_NIGHT_NO
-            }
-            AppCompatDelegate.setDefaultNightMode(nightMode)
         }
 
         binding.logout.setOnClickListener {

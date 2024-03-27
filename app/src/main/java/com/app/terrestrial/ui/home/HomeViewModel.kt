@@ -1,27 +1,29 @@
 package com.app.terrestrial.ui.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.app.terrestrial.R
-import com.app.terrestrial.data.auth.UserRepository
 import kotlinx.coroutines.launch
-import com.app.terrestrial.data.auth.Result
-import com.app.terrestrial.data.auth.UserModel
-import com.app.terrestrial.data.auth.UserPreferences
-import com.app.terrestrial.data.response.DataItem
+import com.app.terrestrial.core.data.source.remote.api.ApiResponse
+import com.app.terrestrial.core.data.source.remote.response.DataItem
+import com.app.terrestrial.core.domain.model.UserModel
+import com.app.terrestrial.core.domain.usecase.TerrestrialUseCase
+import com.app.terrestrial.R
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class HomeViewModel(private val userRepository: UserRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val terrestrialUseCase: TerrestrialUseCase) : ViewModel() {
 
-    private val userPreferences = UserPreferences
+    private val _courseList = MutableLiveData<List<DataItem>>()
+    val courseList: LiveData<List<DataItem>> get() = _courseList
 
-    private val _courseList = MutableLiveData<List<DataItem>?>()
-    val courseList: MutableLiveData<List<DataItem>?> get() = _courseList
-
-    private val _recommendCourseList = MutableLiveData<List<DataItem?>>()
-    val recommendCourseList: MutableLiveData<List<DataItem?>> get() = _recommendCourseList
+    private val _recommendCourseList = MutableLiveData<List<DataItem>>()
+    val recommendCourseList: LiveData<List<DataItem>> get() = _recommendCourseList
 
     private val _profile = MutableLiveData<String>().apply {
         val drawableResourceId = R.drawable.default_profile
@@ -29,58 +31,47 @@ class HomeViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
     val profile: LiveData<String> = _profile
 
-//    private val _searchedCourseList = MutableLiveData<List<DataItem?>?>()
-//    val searchedCourseList: LiveData<List<DataItem?>?> get() = _searchedCourseList
-
-
-    fun getSession(): LiveData<UserModel> = userRepository.getLoginSession().asLiveData()
+    suspend fun getSession(): LiveData<UserModel> {
+        return terrestrialUseCase.getLoginSession().asLiveData()
+    }
 
     fun getAllCourse() {
         viewModelScope.launch {
-            when (val result = userRepository.getAllCourse()) {
-                is Result.Success -> _courseList.value = result.data?.data as List<DataItem>?
-                is Result.Error -> {/* handle error */}
-                else -> {}
+            terrestrialUseCase.getAllCourse().collect { result ->
+                when (result) {
+                    is ApiResponse.Success -> {
+                        val course = result.data?.data ?: emptyList()
+                        _courseList.value = course
+                    }
+                    is ApiResponse.Error -> {
+                        Log.e("HomeViewModel", "Error getting all courses: ${result.errorMessage}")
+                    }
+                    else -> {}
+                }
             }
         }
     }
 
     fun getRecommendCourse() {
         viewModelScope.launch {
-            // Dapatkan data user dari preferensi
-            val user = userRepository.getLoginSessionFromDataStore()
+            val user = terrestrialUseCase.getLoginSession().first()
 
-            when (val result = userRepository.getAllCourse()) {
-                is Result.Success -> {
-                    val allCourses = result.data?.data ?: emptyList()
-                    val groupedCourses = allCourses.groupBy { it?.courseType }
+            terrestrialUseCase.getRecommendedCourses().collect { result ->
+                when (result) {
+                    is ApiResponse.Success -> {
+                        val allCourses = result.data?.data ?: emptyList()
+                        val groupedCourses = allCourses.groupBy { it.courseType }
 
-                    // Filter kursus berdasarkan preferensi pengguna
-                    val recommendCourses = groupedCourses[user.resultRecommendation]?.toList() ?: emptyList()
+                        val recommendCourses = groupedCourses[user.resultRecommendation]?.toList() ?: emptyList()
 
-                    _recommendCourseList.value = recommendCourses
+                        _recommendCourseList.value = recommendCourses
+                    }
+                    is ApiResponse.Error -> {
+                        Log.e("HomeViewModel", "Error getting all courses: ${result.errorMessage}")
+                    }
+                    else -> {}
                 }
-                is Result.Error -> {
-                    // Handle error
-                }
-                else -> {}
             }
         }
     }
-
-//    fun searchCourse(query: String) {
-//        viewModelScope.launch {
-//            try {
-//                val response = userRepository.searchCourse(query)
-//                if (!response.error!!) {
-//                    _searchedCourseList.postValue(response.data)
-//                } else {
-//                    // Handle error jika diperlukan
-//                }
-//            } catch (e: Exception) {
-//                // Handle exception jika diperlukan
-//            }
-//        }
-//    }
 }
-

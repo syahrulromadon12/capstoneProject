@@ -6,44 +6,63 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.app.terrestrial.core.data.source.local.entity.CourseEntity
+import com.app.terrestrial.core.data.source.remote.response.Data
+import com.app.terrestrial.core.data.source.remote.response.DetailCourseResponse
+import com.app.terrestrial.databinding.ActivityDetailCourseBinding
+import com.app.terrestrial.ui.main.MainActivity
 import com.bumptech.glide.Glide
 import com.app.terrestrial.R
-import com.app.terrestrial.data.auth.Result
-import com.app.terrestrial.data.response.Data
-import com.app.terrestrial.data.response.DetailCourseResponse
-import com.app.terrestrial.databinding.ActivityDetailCourseBinding
-import com.app.terrestrial.ui.ViewModelFactory
-import com.app.terrestrial.ui.main.MainActivity
-import com.app.terrestrial.utils.Injection
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DetailCourseActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityDetailCourseBinding
-    private val detailCourseViewModel: DetailCourseViewModel by viewModels {
-        ViewModelFactory(Injection.provideRepository(this))
-    }
+
+    private val detailCourseViewModel: DetailCourseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailCourseBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val courseId = intent.getStringExtra(EXTRA_KURSUS_ID)
+        val courseId = intent.getStringExtra(EXTRA_COURSE_ID)
 
         if (courseId != null) {
             lifecycleScope.launch {
                 try {
                     detailCourseViewModel.getDetail(courseId)
-                } catch (e: Exception) {
-                    // Handle exceptions if needed
+                } catch (_: Exception) {
                 }
             }
 
             binding.back.setOnClickListener { moveToMainActivity() }
+
+            binding.btnFav.setOnClickListener {
+                lifecycleScope.launch {
+                    val result = detailCourseViewModel.detailCourse.value
+                    if (result is com.app.terrestrial.core.data.Result.Success) {
+                        val courseData = result.data?.data
+                        if (courseData != null) {
+                            val courseEntity = CourseEntity(
+                                id = courseId.toInt(),
+                                courseName = courseData.courseName,
+                                thumbnail = courseData.thumbnail,
+                            )
+                            if (isBookmarked(courseEntity)) {
+                                detailCourseViewModel.removeFromBookmark(courseEntity.id)
+                                updateBookmarkIcon(false)
+                            } else {
+                                detailCourseViewModel.addToBookmark(courseEntity)
+                                updateBookmarkIcon(true)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        // Observe the StateFlow to handle the result
         lifecycleScope.launch {
             detailCourseViewModel.detailCourse
                 .collect { result ->
@@ -52,22 +71,31 @@ class DetailCourseActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleResult(result: Result<DetailCourseResponse?>) {
+    private suspend fun isBookmarked(courseEntity: CourseEntity): Boolean {
+        return detailCourseViewModel.isCourseBookmarked(courseEntity.id)
+    }
+
+    private suspend fun handleResult(result: com.app.terrestrial.core.data.Result<DetailCourseResponse?>) {
         when (result) {
-            is Result.Success -> {
+            is com.app.terrestrial.core.data.Result.Success -> {
                 val data = result.data?.data
                 if (data != null) {
                     setData(data)
                     binding.loading.visibility = View.GONE
+                    updateBookmarkIcon(isBookmarked(CourseEntity(
+                        id = data.id,
+                        courseName = data.courseName,
+                        thumbnail = data.thumbnail,
+                        )))
                 } else {
                     binding.tvDesc.text = getString(R.string.null_data)
                 }
             }
-            is Result.Error -> {
+            is com.app.terrestrial.core.data.Result.Error -> {
                 binding.loading.visibility = View.GONE
                 binding.tvDesc.text = getString(R.string.error)
             }
-            is Result.Loading -> {
+            is com.app.terrestrial.core.data.Result.Loading -> {
                 binding.loading.visibility = View.VISIBLE
             }
         }
@@ -86,7 +114,15 @@ class DetailCourseActivity : AppCompatActivity() {
         startActivity(Intent(this, MainActivity::class.java))
     }
 
+    private fun updateBookmarkIcon(isBookmarked: Boolean) {
+        if (isBookmarked) {
+            binding.btnFav.setImageResource(R.drawable.bookmark)
+        } else {
+            binding.btnFav.setImageResource(R.drawable.un_bookmark)
+        }
+    }
+
     companion object {
-        const val EXTRA_KURSUS_ID = "extra_kursus_id"
+        const val EXTRA_COURSE_ID = "extra_course_id"
     }
 }

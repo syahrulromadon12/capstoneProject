@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Terrestrial</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Log in</string>
+    <string name="Signup_text">"Don't have an account ? "</string>
+    <string name="Signup_button">Sign Up now</string>
+    <string name="name">Name</string>
+    <string name="signup">Create My Account</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_upload_course">Upload</string>
+    <string name="title_setting">Setting</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+    <string name="language">Language</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="searchbar_hint">Search</string>
+    <string name="tag_line">what do you want to learn today?</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="title_Detail_kursus">Detail Kursus</string>
+    <string name="title_kursus_name">Judul Kursus</string>
+    <string name="Description_class">Deskripsi Kelas</string>
+    <string name="kursus_kelas">Course Class</string>
+    <string name="Rekomendasi_kelas">Rekomendasi Kelas</string>
+    <string name="login_button">Log in</string>
+    <string name="login_text">Already have an account?</string>
+    <string name="create_account_succes">Akun Berhasil di buat</string>
+    <string name="create_account_failed">Akun Gagal di buat</string>
+    <string name="Belajar">Belajar</string>
+    <string name="pic_kursus">picture kursus</string>
+    <string name="login_succes">Login Succes</string>
+    <string name="login_failed">Gagal Login, Coba lagi</string>
+    <string name="not_empty_form">form tidak boleh kosong</string>
+    <string name="valid_email">email tidak valid</string>
+    <string name="image_description">Image</string>
+    <string name="coming_soon">Mohon maaf ges,,\nfiturnya belum jadi masih aku koding.\nhuftt....</string>
+    <string name="question">Recommendation question</string>
+    <string name="submit">Submit</string>
+    <string name="title_question">Question Career recommendations</string>
+    <string name="hore">Hooray!! You are %s</string>
+    <string name="recommend_result">We have class recommendations for you</string>
+    <string name="Next">Next</string>
+    <string name="coming">Coming Soon</string>
+    <string name="title_login">Login</string>
+    <string name="dialog_title_success">Yeah!</string>
+    <string name="dialog_message_success">Your account is created. \nhappy to learn:)</string>
+    <string name="dialog_button_next">Next</string>
+    <string name="null_data">Kursus tidak ditemukan</string>
+    <string name="error">Error saat Pengambilan data</string>
+    <string name="button_favorite">button favorite</string>
+    <string name="course_name">course name</string>
+    <string name="learn_class">learn class</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="CustomEditTextPassword">Password tidak boleh kurang dari 8 karakter</string>
+    <string name="warn_question">Harap jawab semua pertanyaan</string>
+    <string name="SelectedQuestion">Pertanyaan terpilih: %1$d, Answer: %2$s</string>
+</resources>

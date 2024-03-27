@@ -11,17 +11,17 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.app.terrestrial.R
-import com.app.terrestrial.databinding.ActivityLoginBinding
-import com.app.terrestrial.ui.ViewModelFactory
 import com.app.terrestrial.ui.main.MainActivity
 import com.app.terrestrial.ui.signup.SignupActivity
+import com.app.terrestrial.R
+import com.app.terrestrial.databinding.ActivityLoginBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<LoginViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
+    private val viewModel: LoginViewModel by viewModels()
+
     private lateinit var binding : ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

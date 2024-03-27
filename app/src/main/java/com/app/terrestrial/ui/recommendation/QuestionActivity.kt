@@ -1,27 +1,29 @@
 package com.app.terrestrial.ui.recommendation
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.app.terrestrial.core.ui.QuestionAdapter
 import com.app.terrestrial.R
 import com.app.terrestrial.databinding.ActivityQuestionBinding
-import com.app.terrestrial.ui.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class QuestionActivity : AppCompatActivity() {
 
     private lateinit var questionAdapter: QuestionAdapter
-    private val viewModel by viewModels<QuestionViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
-    private lateinit var binding: ActivityQuestionBinding
-    //private lateinit var repository: UserRepository
 
+    private val viewModel: QuestionViewModel by viewModels()
+
+    private lateinit var binding: ActivityQuestionBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +31,7 @@ class QuestionActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.loading.visibility = View.GONE
         questionAdapter = QuestionAdapter { questionId, answerNumber ->
-            println("Jawaban terpilih untuk pertanyaan $questionId: $answerNumber")
+            println(getString(R.string.SelectedQuestion, questionId, answerNumber))
         }
 
         val recyclerView: RecyclerView = findViewById(R.id.rvQuestion)
@@ -45,20 +47,22 @@ class QuestionActivity : AppCompatActivity() {
 
             if (questionAdapter.allQuestionsAnswered()) {
                 val formattedAnswers = formatSelectedAnswers(selectedAnswers)
-                viewModel.processAnswers(
-                    formattedAnswers[0],
-                    formattedAnswers[1],
-                    formattedAnswers[2]
-                )
+                lifecycleScope.launch {
+                    viewModel.processAnswers(
+                        formattedAnswers[0],
+                        formattedAnswers[1],
+                        formattedAnswers[2]
+                    )
+                }
                 Log.d("QuestionActivity", "Selected Answers: $formattedAnswers")
             } else {
-                Toast.makeText(this, "Harap jawab semua pertanyaan", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.warn_question), Toast.LENGTH_SHORT).show()
             }
         }
 
 
         viewModel.result.observe(this) { result ->
-            Log.e("QuestionActivity","data dari QuestionActivity: $result")
+            Log.e("QuestionActivity", "data dari QuestionActivity: $result")
             val intent = Intent(this, RecommendationResultActivity::class.java)
             intent.putExtra("result", result)
             startActivity(intent)

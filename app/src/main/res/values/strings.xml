@@ -61,4 +61,11 @@
     <string name="dialog_button_next">Next</string>
     <string name="null_data">Kursus tidak ditemukan</string>
     <string name="error">Error saat Pengambilan data</string>
+    <string name="button_favorite">button favorite</string>
+    <string name="course_name">course name</string>
+    <string name="learn_class">learn class</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="CustomEditTextPassword">Password tidak boleh kurang dari 8 karakter</string>
+    <string name="warn_question">Harap jawab semua pertanyaan</string>
+    <string name="SelectedQuestion">Pertanyaan terpilih: %1$d, Answer: %2$s</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import com.app.terrestrial.R
 import com.google.android.material.textfield.TextInputEditText
 
 class CustomEditTextPassword : TextInputEditText {
@@ -31,7 +32,7 @@ class CustomEditTextPassword : TextInputEditText {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val password = s.toString()
                 if (password.length < 8) {
-                    setError("Password tidak boleh kurang dari 8 karakter", null)
+                    setError(context.getString(R.string.CustomEditTextPassword), null)
                 } else {
                     error = null
                 }

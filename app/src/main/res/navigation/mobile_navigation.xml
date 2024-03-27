@@ -14,7 +14,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.app.terrestrial.ui.upload.FavoriteFragment"
+        android:name="com.app.terrestrial.ui.favorite.FavoriteFragment"
         android:label="@string/title_upload_course"
         tools:layout="@layout/fragment_favorite" >
         <action

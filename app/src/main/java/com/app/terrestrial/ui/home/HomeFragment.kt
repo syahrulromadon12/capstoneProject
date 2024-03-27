@@ -8,22 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.app.terrestrial.core.domain.model.UserModel
+import com.app.terrestrial.core.ui.CourseAdapter
+import com.app.terrestrial.core.ui.RecommendCourseAdapter
+import com.app.terrestrial.ui.detail.DetailCourseActivity
 import com.bumptech.glide.Glide
 import com.app.terrestrial.R
 import com.app.terrestrial.databinding.FragmentHomeBinding
-import com.app.terrestrial.ui.ViewModelFactory
-import com.app.terrestrial.ui.detail.DetailCourseActivity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val homeViewModel by viewModels<HomeViewModel> {
-        ViewModelFactory.getInstance(requireContext())
-    }
+    private val homeViewModel: HomeViewModel by viewModels()
+
+    private var isDataLoaded = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,9 +39,12 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        homeViewModel.getSession().observe(viewLifecycleOwner) { user ->
-            binding.tvName.text = user.name
-            binding.tvTag.text = getString(R.string.tag_line)
+        lifecycleScope.launch {
+            homeViewModel.getSession().observe(viewLifecycleOwner) { user: UserModel ->
+                loadData()
+                binding.tvName.text = user.name
+                binding.tvTag.text = getString(R.string.tag_line)
+            }
         }
 
         homeViewModel.profile.observe(viewLifecycleOwner) { imageUrl ->
@@ -47,7 +56,10 @@ class HomeFragment : Fragment() {
                 .into(binding.photo)
         }
 
-        // Setup RecyclerView for Course
+        return root
+    }
+
+    private fun loadData() {
         val courseRecyclerView: RecyclerView = binding.rvCourse
         val courseAdapter = CourseAdapter { courseId ->
             navigateToDetail(courseId)
@@ -61,7 +73,6 @@ class HomeFragment : Fragment() {
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         courseRecyclerView.adapter = courseAdapter
 
-        // Setup RecyclerView for Recommend Course
         val recommendRecyclerView: RecyclerView = binding.rvRecommend
         val recommendAdapter = RecommendCourseAdapter { courseId ->
             navigateToDetail(courseId)
@@ -70,20 +81,18 @@ class HomeFragment : Fragment() {
         homeViewModel.recommendCourseList.observe(viewLifecycleOwner) {
             recommendAdapter.submitList(it)
         }
-//
+
         recommendRecyclerView.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recommendRecyclerView.adapter = recommendAdapter
 
         homeViewModel.getAllCourse()
         homeViewModel.getRecommendCourse()
-
-        return root
     }
 
     private fun navigateToDetail(courseId: String) {
         val intent = Intent(requireContext(), DetailCourseActivity::class.java)
-        intent.putExtra(DetailCourseActivity.EXTRA_KURSUS_ID, courseId)
+        intent.putExtra(DetailCourseActivity.EXTRA_COURSE_ID, courseId)
         startActivity(intent)
     }
 

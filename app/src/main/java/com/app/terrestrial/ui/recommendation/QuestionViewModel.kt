@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.terrestrial.data.auth.UserRepository
-import com.app.terrestrial.data.response.QuestionItem
-import com.app.terrestrial.data.auth.Result
-import com.app.terrestrial.data.auth.UserModel
+import com.app.terrestrial.core.data.source.remote.api.ApiResponse
+import com.app.terrestrial.core.data.source.remote.response.QuestionItem
+import com.app.terrestrial.core.domain.model.UserModel
+import com.app.terrestrial.core.domain.usecase.TerrestrialUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class QuestionViewModel(private val repository: UserRepository) : ViewModel() {
+@HiltViewModel
+class QuestionViewModel @Inject constructor(private val terrestrialUseCase: TerrestrialUseCase) : ViewModel() {
 
     private val _questions = MutableLiveData<List<QuestionItem?>?>()
     val questions: LiveData<List<QuestionItem?>?> get() = _questions
@@ -21,57 +24,30 @@ class QuestionViewModel(private val repository: UserRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private var isQuestionFetched = false
+
     fun getQuestions() {
-        viewModelScope.launch {
-            when (val result = repository.getQuestion()) {
-                is Result.Success -> _questions.value = result.data.data
-                is Result.Error -> {/* handle error */}
-                else -> {}
+        if (!isQuestionFetched) {
+            viewModelScope.launch {
+                terrestrialUseCase.getQuestion().collect { response ->
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _questions.value = response.data.data
+                            isQuestionFetched = true
+                        }
+                        is ApiResponse.Error -> {
+                            /* handle error */
+                        }
+                        else -> {}
+                    }
+                }
             }
         }
     }
 
-//    fun processModelWithAnswers(
-//        desain: Int,
-//        logika: Int,
-//        data: Int,
-//        questionActivity: QuestionActivity
-//    ) {
-//        viewModelScope.launch {
-//            try {
-//                val response = repository.submitAnswers(desain, logika, data)
-//                _modelResult.value = response.prediction
-//            } catch (e: Exception) {
-//                // Handle error if needed
-//            }
-//        }
-//    }
-
-//    fun processAnswers(desain: Int, logika: Int, data: Int) {
-//        val result = determineResult(desain, logika, data)
-//    }
-
-    fun processAnswers(desain: Int, logika: Int, data: Int): String {
-        val recommendations = listOf(
-            Triple(7, 0, 0), Triple(6, 1, 0), Triple(6, 0, 1), Triple(5, 1, 1),
-            Triple(4, 2, 1), Triple(4, 1, 2), Triple(4, 3, 0), Triple(4, 0, 3),
-            Triple(3, 3, 1), Triple(3, 1, 3), Triple(3, 2, 2)
-        )
-
-        val result = when {
-            recommendations.any { (d, l, da) -> d == desain && l == logika && da == data } -> "Frontend"
-            recommendations.any { (l, d, da) -> l == logika && d == desain && da == data } -> "Backend"
-            else -> "DataScience"
-        }
-
+    suspend fun processAnswers(desain: Int, logika: Int, data: Int): String {
+        val result = terrestrialUseCase.processAnswers(desain, logika, data)
         _result.postValue(result)
-
-        viewModelScope.launch {
-            val userModel = UserModel(isAnswer = true, resultRecommendation = result)
-            repository.saveResultRecommendation(userModel)
-        }
-
         return result
     }
-
 }

@@ -75,7 +75,8 @@
                 android:layout_width="35dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:src="@drawable/free" />
+                android:src="@drawable/free"
+                android:contentDescription="@string/image_description" />
 
         </LinearLayout>
 

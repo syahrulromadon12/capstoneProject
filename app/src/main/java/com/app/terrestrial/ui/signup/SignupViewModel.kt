@@ -4,42 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.terrestrial.data.api.ApiConfig
-import com.app.terrestrial.data.api.ApiService
-import kotlinx.coroutines.Dispatchers
+import com.app.terrestrial.core.data.source.remote.api.ApiResponse
+import com.app.terrestrial.core.domain.usecase.TerrestrialUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SignupViewModel : ViewModel() {
-
-    private val apiService: ApiService = ApiConfig.getApiService("")
+@HiltViewModel
+class SignupViewModel @Inject constructor(private val useCase: TerrestrialUseCase) : ViewModel() {
 
     private val _registrationResult = MutableLiveData<Boolean>()
     val registrationResult: LiveData<Boolean> = _registrationResult
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
     fun registerUser(name: String, email: String, password: String) {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             try {
-                _isLoading.postValue(true)
+                _registrationResult.postValue(false)
 
-                val signupRequest = ApiService.SignupRequest(name, email, password)
-                val response = apiService.signup(signupRequest)
-                val registrationSuccess = response.error == false
+                val response = useCase.signup(name, email, password).firstOrNull()
+                val registrationSuccess = response is ApiResponse.Success
 
-                withContext(Dispatchers.Main) {
-                    _registrationResult.value = registrationSuccess
-                    _isLoading.value = false
-                }
+                _registrationResult.postValue(registrationSuccess)
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _isLoading.value = false
-                    _registrationResult.value = false
-                }
-            } finally {
-                _isLoading.value = false
+                _registrationResult.postValue(false)
             }
         }
     }

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name="com.app.terrestrial.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
@@ -15,29 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Terrestrial"
         tools:targetApi="tiramisu" >
-        <activity android:name=".ui.recommendation.QuestionActivity"
+        <activity android:name="com.app.terrestrial.ui.recommendation.QuestionActivity"
             android:exported="false"/>
         <activity
-            android:name=".ui.recommendation.RecommendationResultActivity"
+            android:name="com.app.terrestrial.ui.recommendation.RecommendationResultActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.kursuskelas.kursus_kelas_Activity"
+            android:name="com.app.terrestrial.ui.detail.DetailCourseActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.detail.DetailCourseActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.upload.FavoriteFragment"
-            android:exported="false" />
-        <activity
-            android:name=".ui.home.HomeFragment"
-            android:exported="false" />
-        <activity
-            android:name=".ui.setting.SettingFragment"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
-        <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.app.terrestrial.ui.main.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="true"
             android:windowSoftInputMode="adjustPan" >
@@ -48,10 +36,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name="com.app.terrestrial.ui.login.LoginActivity"
             android:exported="true" />
         <activity
-            android:name=".ui.signup.SignupActivity"
+            android:name="com.app.terrestrial.ui.signup.SignupActivity"
             android:exported="true" />
     </application>
 

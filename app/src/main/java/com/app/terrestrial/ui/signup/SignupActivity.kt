@@ -10,17 +10,17 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.app.terrestrial.ui.login.LoginActivity
 import com.app.terrestrial.R
 import com.app.terrestrial.databinding.ActivitySignupBinding
-import com.app.terrestrial.ui.ViewModelFactory
-import com.app.terrestrial.ui.login.LoginActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignupBinding
-    private val viewModel by viewModels<SignupViewModel> {
-        ViewModelFactory.getInstance(this)
-    }
+
+    private val viewModel: SignupViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +32,7 @@ class SignupActivity : AppCompatActivity() {
         setupAction()
         setupAnimation()
 
-        viewModel.registrationResult.observe(this) {
-            if (it) {
-                showSuccessDialog(binding.emailEditText.text.toString())
-            } else {
-                showToast(getString(R.string.create_account_failed))
-                showLoading(false)
-            }
-        }
+        observeRegistrationResult()
 
         binding.tvLogin.setOnClickListener {
             val signIn = Intent(this, LoginActivity::class.java)
@@ -58,6 +51,52 @@ class SignupActivity : AppCompatActivity() {
                 registerUser(name, email, password)
             } else {
                 showToast(getString(R.string.not_empty_form))
+            }
+        }
+    }
+
+    private fun registerUser(name: String, email: String, password: String) {
+        if (isValidEmail(email)) {
+            viewModel.registerUser(name, email, password)
+        } else {
+            showToast(getString(R.string.valid_email))
+            showLoading(false)
+        }
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun observeRegistrationResult() {
+        viewModel.registrationResult.observe(this) {
+            if (it) {
+                showSuccessDialog()
+            } else {
+                showToast(getString(R.string.create_account_failed))
+                showLoading(false)
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.loading.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun showSuccessDialog() {
+        if (!isFinishing && !isDestroyed) {
+            AlertDialog.Builder(this).apply {
+                setTitle(getString(R.string.dialog_title_success))
+                setMessage(" ${getString(R.string.dialog_message_success)}")
+                setPositiveButton(getString(R.string.dialog_button_next)) { _, _ ->
+                    finish()
+                }
+                create()
+                show()
             }
         }
     }
@@ -98,42 +137,5 @@ class SignupActivity : AppCompatActivity() {
             )
             startDelay = 90
         }.start()
-    }
-
-
-
-    private fun registerUser(name: String, email: String, password: String) {
-        if (isValidEmail(email)) {
-            viewModel.registerUser(name, email, password)
-        } else {
-            showToast(getString(R.string.valid_email))
-            showLoading(false)
-        }
-    }
-
-    private fun isValidEmail(email: String): Boolean {
-        return Patterns.EMAIL_ADDRESS.matcher(email).matches()
-    }
-
-    private fun showSuccessDialog(email: String) {
-        if (!isFinishing && !isDestroyed) {
-            AlertDialog.Builder(this).apply {
-                setTitle(getString(R.string.dialog_title_success))
-                setMessage(" ${getString(R.string.dialog_message_success)}")
-                setPositiveButton(getString(R.string.dialog_button_next)) { _, _ ->
-                    finish()
-                }
-                create()
-                show()
-            }
-        }
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        binding.loading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

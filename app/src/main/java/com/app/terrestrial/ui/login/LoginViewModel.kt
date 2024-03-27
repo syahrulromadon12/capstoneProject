@@ -1,16 +1,19 @@
 package com.app.terrestrial.ui.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.terrestrial.core.data.source.remote.api.ApiResponse
+import com.app.terrestrial.core.domain.model.UserModel
+import com.app.terrestrial.core.domain.usecase.TerrestrialUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import android.util.Log
-import com.app.terrestrial.data.api.ApiService
-import com.app.terrestrial.data.auth.UserModel
-import com.app.terrestrial.data.auth.UserRepository
+import javax.inject.Inject
 
-class LoginViewModel(private val repository: UserRepository) : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val terrestrialUseCase: TerrestrialUseCase) : ViewModel() {
 
     private val _loginResult = MutableLiveData<Boolean>()
     val loginResult: LiveData<Boolean> get() = _loginResult
@@ -23,17 +26,16 @@ class LoginViewModel(private val repository: UserRepository) : ViewModel() {
             try {
                 _isLoading.postValue(true)
 
-                val loginRequest = ApiService.LoginRequest(email, password)
-                val response = repository.login(loginRequest)
-
-                if (response.error == false) {
-                    val token = response.loginResult?.token ?: ""
-                    val name = response.loginResult?.name ?: ""
-                    val emailResult = response.loginResult?.email ?: ""
-                    repository.saveLoginSession(UserModel(name, emailResult, token, isLogin = true))
-                    _loginResult.value = true
-                } else {
-                    _loginResult.value = false
+                terrestrialUseCase.login(email, password).collect { response ->
+                    if (response is ApiResponse.Success && response.data.error == false) {
+                        val token = response.data.loginResult?.token ?: ""
+                        val name = response.data.loginResult?.name ?: ""
+                        val emailResult = response.data.loginResult?.email ?: ""
+                        terrestrialUseCase.saveLoginSession(UserModel(name, emailResult, token, isLogin = true))
+                        _loginResult.value = true
+                    } else {
+                        _loginResult.value = false
+                    }
                 }
             } catch (e: Exception) {
                 _loginResult.value = false

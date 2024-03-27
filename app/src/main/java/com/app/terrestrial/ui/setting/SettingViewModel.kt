@@ -6,42 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.app.terrestrial.R
-import com.app.terrestrial.data.auth.UserModel
-import com.app.terrestrial.data.auth.UserRepository
+import com.app.terrestrial.core.domain.model.UserModel
+import com.app.terrestrial.core.domain.usecase.TerrestrialUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class SettingViewModel(private val repository: UserRepository) : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "Setting"
-    }
-    val text: LiveData<String> = _text
-
-    private val _name = MutableLiveData<String>().apply {
-        value = "Asep Sutisna"
-    }
-    val name: LiveData<String> = _name
-
-    private val _email = MutableLiveData<String>().apply {
-        value = "AsepSutisna765@gmail.com"
-    }
-    val email: LiveData<String> = _email
-
+@HiltViewModel
+class SettingViewModel @Inject constructor(private val terrestrialUseCase: TerrestrialUseCase) : ViewModel() {
     private val _profile = MutableLiveData<String>().apply {
-        val drawableResourceId = R.drawable.elon_musk
+        val drawableResourceId = R.drawable.default_profile
         value = drawableResourceId.toString()
     }
     val profile: LiveData<String> = _profile
 
-    private val _darkMode = MutableLiveData<Boolean>()
-    val darkMode: LiveData<Boolean> = _darkMode
-
     fun logout() {
         viewModelScope.launch {
-            repository.clearLoginSession()
+            terrestrialUseCase.clearLoginSession()
         }
     }
 
-    fun getSession(): LiveData<UserModel> = repository.getLoginSession().asLiveData()
+    suspend fun getSession(): LiveData<UserModel> = terrestrialUseCase.getLoginSession().asLiveData()
 }

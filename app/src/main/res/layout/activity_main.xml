@@ -16,6 +16,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_insetEdge="bottom"
+        android:background="@drawable/rounded_bottom_nav_bg"
         app:menu="@menu/bottom_nav_menu" />
 
     <fragment
